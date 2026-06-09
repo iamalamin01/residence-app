@@ -1,7 +1,8 @@
 "use client";
 
-import { Bell, Search } from "lucide-react";
+import { Bell, Search, LogOut } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { logout } from "@/app/auth/actions";
 
 export default function Header({ title }: { title: string }) {
   return (
@@ -22,6 +23,16 @@ export default function Header({ title }: { title: string }) {
         <Avatar className="w-8 h-8 cursor-pointer ring-2 ring-teal-400/30">
           <AvatarFallback className="bg-teal-500 text-white text-xs font-bold">A</AvatarFallback>
         </Avatar>
+        <form action={logout}>
+          <button
+            type="submit"
+            className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-slate-500 hover:text-red-600 hover:bg-red-50 transition-colors"
+            title="Logout"
+          >
+            <LogOut className="w-4 h-4" />
+            <span className="hidden md:inline">Logout</span>
+          </button>
+        </form>
       </div>
     </header>
   );

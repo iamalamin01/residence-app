@@ -12,6 +12,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { logout } from "@/app/auth/actions";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -21,7 +22,14 @@ const navItems = [
   { href: "/payments", label: "Payments", icon: CreditCard },
 ];
 
-export default function Sidebar() {
+const roleLabel: Record<string, string> = {
+  admin: "Admin",
+  manager: "Manager",
+  maintenance_staff: "Staff",
+  tenant: "Tenant",
+};
+
+export default function Sidebar({ userName, userRole }: { userName: string; userRole: string }) {
   const pathname = usePathname();
 
   return (
@@ -54,9 +62,6 @@ export default function Sidebar() {
                   : "text-slate-400 hover:bg-white/5 hover:text-slate-200"
               )}
             >
-              {active && (
-                <span className="absolute left-3 w-1 h-6 bg-teal-400 rounded-full" />
-              )}
               <Icon className={cn("w-[18px] h-[18px] shrink-0", active ? "text-teal-400" : "")} />
               {label}
             </Link>
@@ -70,17 +75,22 @@ export default function Sidebar() {
       <div className="p-4 space-y-1">
         <div className="flex items-center gap-3 px-4 py-3 rounded-xl">
           <div className="w-8 h-8 rounded-full bg-teal-500 flex items-center justify-center text-white text-xs font-bold shrink-0">
-            A
+            {userName.charAt(0).toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-slate-200 truncate">Admin</p>
-            <p className="text-[11px] text-slate-500 truncate">Owner</p>
+            <p className="text-sm font-medium text-slate-200 truncate">{userName}</p>
+            <p className="text-[11px] text-slate-500 capitalize">{roleLabel[userRole] ?? userRole}</p>
           </div>
         </div>
-        <button className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-500 hover:text-slate-300 hover:bg-white/5 transition-all w-full">
-          <LogOut className="w-4 h-4" />
-          Logout
-        </button>
+        <form action={logout}>
+          <button
+            type="submit"
+            className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-500 hover:text-slate-300 hover:bg-white/5 transition-all w-full"
+          >
+            <LogOut className="w-4 h-4" />
+            Logout
+          </button>
+        </form>
       </div>
     </aside>
   );

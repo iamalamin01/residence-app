@@ -1,7 +1,8 @@
 import Header from "@/components/Header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { rooms, tenants } from "@/lib/data";
+import RoomStatusButton from "@/components/RoomStatusButton";
+import { store } from "@/lib/store";
 import { DoorOpen, User, BanknoteIcon, Wifi } from "lucide-react";
 
 const statusColor: Record<string, string> = {
@@ -23,6 +24,8 @@ const typeLabel: Record<string, string> = {
 };
 
 export default function RoomsPage() {
+  const rooms = store.rooms.getAll();
+  const tenants = store.tenants.getAll();
   const floors = [...new Set(rooms.map((r) => r.floor))].sort();
 
   return (
@@ -42,7 +45,7 @@ export default function RoomsPage() {
                   return (
                     <Card
                       key={room.id}
-                      className={`border-2 shadow-sm hover:shadow-md transition-shadow cursor-pointer ${statusColor[room.status]}`}
+                      className={`border-2 shadow-sm hover:shadow-md transition-shadow ${statusColor[room.status]}`}
                     >
                       <CardContent className="p-4 space-y-3">
                         <div className="flex items-center justify-between">
@@ -69,6 +72,10 @@ export default function RoomsPage() {
                             <Wifi className="w-3 h-3" />
                             {room.amenities.join(", ")}
                           </p>
+                        </div>
+
+                        <div className="pt-1 border-t border-black/5">
+                          <RoomStatusButton roomId={room.id} current={room.status} />
                         </div>
                       </CardContent>
                     </Card>

@@ -2,7 +2,8 @@ import Header from "@/components/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { payments, tenants, rooms } from "@/lib/data";
+import MarkPaidButton from "@/components/MarkPaidButton";
+import { store } from "@/lib/store";
 import { CheckCircle2, Clock, XCircle } from "lucide-react";
 
 const statusConfig = {
@@ -12,6 +13,10 @@ const statusConfig = {
 };
 
 export default function PaymentsPage() {
+  const payments = store.payments.getAll();
+  const tenants = store.tenants.getAll();
+  const rooms = store.rooms.getAll();
+
   const collected = payments.filter((p) => p.status === "paid").reduce((s, p) => s + p.amount, 0);
   const pending = payments.filter((p) => p.status === "pending").reduce((s, p) => s + p.amount, 0);
   const overdue = payments.filter((p) => p.status === "overdue").reduce((s, p) => s + p.amount, 0);
@@ -52,6 +57,7 @@ export default function PaymentsPage() {
                   <TableHead>Due Date</TableHead>
                   <TableHead>Paid Date</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -74,6 +80,11 @@ export default function PaymentsPage() {
                             {payment.status}
                           </Badge>
                         </div>
+                      </TableCell>
+                      <TableCell>
+                        {payment.status !== "paid" && (
+                          <MarkPaidButton paymentId={payment.id} />
+                        )}
                       </TableCell>
                     </TableRow>
                   );

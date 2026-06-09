@@ -2,12 +2,12 @@ import Header from "@/components/Header";
 import RoomOverviewGrid from "@/components/RoomOverviewGrid";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { rooms, tenants, maintenanceRequests, payments } from "@/lib/data";
+import { store } from "@/lib/store";
 import { DoorOpen, Users, Wrench, CreditCard, TrendingUp, AlertCircle } from "lucide-react";
 
 const statCards = (
-  occupied: number, vacant: number,
-  pendingMaint: number, totalRentCollected: number, overdueCount: number
+  occupied: number, vacant: number, tenantCount: number,
+  pendingMaint: number, maintTotal: number, totalRentCollected: number, overdueCount: number
 ) => [
   {
     title: "Total Rooms",
@@ -21,7 +21,7 @@ const statCards = (
   },
   {
     title: "Tenants",
-    value: tenants.length,
+    value: tenantCount,
     sub: `${15 - occupied} rooms available`,
     icon: Users,
     iconBg: "bg-teal-500/15",
@@ -31,7 +31,7 @@ const statCards = (
   },
   {
     title: "Maintenance",
-    value: maintenanceRequests.length,
+    value: maintTotal,
     sub: `${pendingMaint} pending requests`,
     icon: Wrench,
     iconBg: "bg-amber-500/15",
@@ -52,13 +52,18 @@ const statCards = (
 ];
 
 export default function DashboardPage() {
+  const rooms = store.rooms.getAll();
+  const tenants = store.tenants.getAll();
+  const maintenanceRequests = store.maintenance.getAll();
+  const payments = store.payments.getAll();
+
   const occupied = rooms.filter((r) => r.status === "occupied").length;
   const vacant = rooms.filter((r) => r.status === "vacant").length;
   const totalRentCollected = payments.filter((p) => p.status === "paid").reduce((s, p) => s + p.amount, 0);
   const pendingMaint = maintenanceRequests.filter((m) => m.status === "pending").length;
   const overdueCount = payments.filter((p) => p.status === "overdue").length;
 
-  const stats = statCards(occupied, vacant, pendingMaint, totalRentCollected, overdueCount);
+  const stats = statCards(occupied, vacant, tenants.length, pendingMaint, maintenanceRequests.length, totalRentCollected, overdueCount);
   const recentRequests = maintenanceRequests.filter((m) => m.status !== "completed").slice(0, 5);
   const dueTenants = payments.filter((p) => p.status !== "paid").slice(0, 5);
 
