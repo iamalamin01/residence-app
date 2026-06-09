@@ -6,13 +6,13 @@ import { store } from "@/lib/store";
 import { DoorOpen, Users, Wrench, CreditCard, TrendingUp, AlertCircle } from "lucide-react";
 
 const statCards = (
-  occupied: number, vacant: number, tenantCount: number,
+  occupied: number, vacant: number, maintenance: number, tenantCount: number,
   pendingMaint: number, maintTotal: number, totalRentCollected: number, overdueCount: number
 ) => [
   {
     title: "Total Rooms",
-    value: 15,
-    sub: `${occupied} occupied · ${vacant} vacant`,
+    value: occupied + vacant + maintenance,
+    sub: `${occupied} occupied · ${vacant} vacant · ${maintenance} maintenance`,
     icon: DoorOpen,
     iconBg: "bg-blue-500/15",
     iconColor: "text-blue-400",
@@ -22,7 +22,7 @@ const statCards = (
   {
     title: "Tenants",
     value: tenantCount,
-    sub: `${15 - occupied} rooms available`,
+    sub: `${vacant} room${vacant !== 1 ? "s" : ""} available to rent`,
     icon: Users,
     iconBg: "bg-teal-500/15",
     iconColor: "text-teal-500",
@@ -59,11 +59,12 @@ export default function DashboardPage() {
 
   const occupied = rooms.filter((r) => r.status === "occupied").length;
   const vacant = rooms.filter((r) => r.status === "vacant").length;
+  const maintenance = rooms.filter((r) => r.status === "maintenance").length;
   const totalRentCollected = payments.filter((p) => p.status === "paid").reduce((s, p) => s + p.amount, 0);
   const pendingMaint = maintenanceRequests.filter((m) => m.status === "pending").length;
   const overdueCount = payments.filter((p) => p.status === "overdue").length;
 
-  const stats = statCards(occupied, vacant, tenants.length, pendingMaint, maintenanceRequests.length, totalRentCollected, overdueCount);
+  const stats = statCards(occupied, vacant, maintenance, tenants.length, pendingMaint, maintenanceRequests.length, totalRentCollected, overdueCount);
   const recentRequests = maintenanceRequests.filter((m) => m.status !== "completed").slice(0, 5);
   const dueTenants = payments.filter((p) => p.status !== "paid").slice(0, 5);
 

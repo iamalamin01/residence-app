@@ -29,4 +29,4 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+          SESSION_SECRET: ${{ secrets.SESSION_SECRET || 'ci-build-secret-placeholder-32chars' }}
